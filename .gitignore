@@ -1,0 +1,27 @@
+node_modules/
+.next/
+dist/
+coverage/
+build/
+out/
+.turbo/
+.cache/
+*.log
+*.tsbuildinfo
+
+# Local env and secrets
+.envwhat are this 
+.env.local
+.env.development
+.env.production
+.env.test
+.env.*.local
+.npmrc
+
+# Local tooling / agent state
+.agents/
+skills-lock.json
+bun.lock
+
+# Generated deploy metadata
+deployment.json
