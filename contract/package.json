@@ -1,0 +1,19 @@
+{
+  "name": "@midnight-live-poll/contract",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "compact compile src/poll.compact src/managed/poll && npm run sync:assets",
+    "sync:assets": "mkdir -p ../public/zk/poll && cp -Rf src/managed/poll/keys ../public/zk/poll/ && cp -Rf src/managed/poll/zkir ../public/zk/poll/"
+  },
+  "dependencies": {
+    "@midnight-ntwrk/compact-runtime": "0.16.0",
+    "@midnight-ntwrk/ledger-v8": "^8.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.16.0"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

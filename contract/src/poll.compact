@@ -1,0 +1,59 @@
+pragma language_version 0.23.0;
+
+import CompactStandardLibrary;
+
+export enum PollState {
+  OPEN,
+  CLOSED
+}
+
+export ledger state: PollState;
+export ledger question: Opaque<"string">;
+export ledger optionA: Opaque<"string">;
+export ledger optionB: Opaque<"string">;
+export ledger optionC: Opaque<"string">;
+export ledger optionD: Opaque<"string">;
+export ledger votesA: Counter;
+export ledger votesB: Counter;
+export ledger votesC: Counter;
+export ledger votesD: Counter;
+export ledger totalVotes: Counter;
+
+constructor(
+  pollQuestion: Opaque<"string">,
+  pollOptionA: Opaque<"string">,
+  pollOptionB: Opaque<"string">,
+  pollOptionC: Opaque<"string">,
+  pollOptionD: Opaque<"string">,
+) {
+  state = PollState.OPEN;
+  question = disclose(pollQuestion);
+  optionA = disclose(pollOptionA);
+  optionB = disclose(pollOptionB);
+  optionC = disclose(pollOptionC);
+  optionD = disclose(pollOptionD);
+}
+
+export circuit voteForA(): [] {
+  assert(state == PollState.OPEN, "Poll closed");
+  votesA.increment(1);
+  totalVotes.increment(1);
+}
+
+export circuit voteForB(): [] {
+  assert(state == PollState.OPEN, "Poll closed");
+  votesB.increment(1);
+  totalVotes.increment(1);
+}
+
+export circuit voteForC(): [] {
+  assert(state == PollState.OPEN, "Poll closed");
+  votesC.increment(1);
+  totalVotes.increment(1);
+}
+
+export circuit voteForD(): [] {
+  assert(state == PollState.OPEN, "Poll closed");
+  votesD.increment(1);
+  totalVotes.increment(1);
+}
