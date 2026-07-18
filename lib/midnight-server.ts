@@ -1,16 +1,29 @@
-import { ContractState } from '@midnight-ntwrk/compact-runtime';
-import { ledger } from '../contract/src/managed/poll/contract/index.js';
 import { POLL_CONTRACT_ADDRESS } from './poll-config';
 import type { PollChoice, PollSnapshot, PollStatus } from './poll-types';
 
 const INDEXER = 'https://indexer.preprod.midnight.network/api/v4/graphql';
 const CONTRACT_ADDRESS = POLL_CONTRACT_ADDRESS;
+type PollLedger = Awaited<ReturnType<typeof loadPollLedger>>;
+let pollLedgerPromise: Promise<PollLedger> | null = null;
 
 function fromHex(hex: string): Uint8Array {
   const normalized = hex.startsWith('0x') ? hex.slice(2) : hex;
   const bytes = new Uint8Array(normalized.length / 2);
   for (let i = 0; i < normalized.length; i += 2) bytes[i / 2] = parseInt(normalized.slice(i, i + 2), 16);
   return bytes;
+}
+
+async function loadPollLedger() {
+  const [{ ContractState }, { ledger }] = await Promise.all([
+    import('@midnight-ntwrk/compact-runtime'),
+    import('../contract/src/managed/poll/contract/index.js'),
+  ]);
+  return { ContractState, ledger };
+}
+
+async function getPollLedger() {
+  pollLedgerPromise ??= loadPollLedger();
+  return pollLedgerPromise;
 }
 
 async function readState(address: string) {
@@ -23,9 +36,24 @@ async function readState(address: string) {
     }),
     cache: 'no-store',
   });
-  const payload = await response.json();
-  const state = payload.data?.contractAction?.state;
-  return state ? ledger(ContractState.deserialize(fromHex(state)).data) : null;
+  if (!response.ok) {
+    throw new Error(`Indexer request failed with status ${response.status}`);
+  }
+  const payload = await response.json().catch(() => {
+    throw new Error('Indexer response was not valid JSON.');
+  });
+  const state = payload?.data?.contractAction?.state;
+  if (!state) return null;
+  try {
+    const { ContractState, ledger } = await getPollLedger();
+    return ledger(ContractState.deserialize(fromHex(state)).data);
+  } catch (error) {
+    throw new Error(
+      error instanceof Error
+        ? `Contract decoder unavailable on this deployment: ${error.message}`
+        : 'Contract decoder unavailable on this deployment.',
+    );
+  }
 }
 
 export async function readPollSnapshot(): Promise<PollStatus> {

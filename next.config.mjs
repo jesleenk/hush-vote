@@ -6,6 +6,12 @@ const require = createRequire(import.meta.url);
 const nextConfig = {
   distDir: process.env.NEXT_DIST_DIR || '.next',
   typedRoutes: true,
+  outputFileTracingIncludes: {
+    '/api/poll': [
+      'node_modules/@midnight-ntwrk/compact-runtime/**',
+      'node_modules/@midnight-ntwrk/onchain-runtime-v3/**',
+    ],
+  },
   webpack: (config, { isServer }) => {
     config.experiments = { ...config.experiments, asyncWebAssembly: true, topLevelAwait: true };
     if (!isServer) {
