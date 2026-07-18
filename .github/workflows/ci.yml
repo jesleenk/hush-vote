@@ -33,6 +33,10 @@ jobs:
           cache: npm
       - name: Install Compact compiler
         run: curl --proto '=https' --tlsv1.2 -LsSf https://github.com/midnightntwrk/compact/releases/latest/download/compact-installer.sh | sh
+      - name: Add Compact to PATH
+        run: echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - name: Select default Compact compiler
+        run: compact update
       - name: Install deps
         run: npm install
       - name: Build contract
