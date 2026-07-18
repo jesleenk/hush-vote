@@ -308,7 +308,7 @@ export default function DeployClient() {
               className="rounded-full border border-white/10 px-3 py-2 text-sm text-midnight-muted transition hover:border-midnight-accent/30 hover:text-slate-100"
               href="/#poll"
             >
-              View live poll
+              View live ballot
             </Link>
             <button
               type="button"

@@ -132,7 +132,9 @@ export default function PollCard() {
         <p className="eyebrow">Ballot unavailable</p>
         <h1>Nothing to vote on yet.</h1>
         <p className="supporting-copy">{message}</p>
-        <button type="button" className="primary-button" onClick={refresh}>Try again</button>
+        <button type="button" className="primary-button" onClick={() => { void refresh(); }}>
+          Try again
+        </button>
       </section>
     );
   }

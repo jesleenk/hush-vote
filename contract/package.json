@@ -1,5 +1,5 @@
 {
-  "name": "@midnight-live-poll/contract",
+  "name": "@hush-vote/contract",
   "private": true,
   "type": "module",
   "scripts": {
