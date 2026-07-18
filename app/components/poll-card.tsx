@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import type { PollChoice, PollSnapshot, PollStatus } from '@/lib/poll-types';
+import type { PollChoice, PollSnapshot } from '@/lib/poll-types';
 import { connectWalletSession, detectWallet, type ConnectedSession } from '@/lib/midnight-browser';
+import { readPollSnapshot } from '@/lib/poll-indexer';
 import { submitBrowserVote } from '@/lib/poll-contract';
 
 type ApiState =
@@ -38,16 +39,13 @@ export default function PollCard() {
 
   const refresh = async (showError = true): Promise<PollSnapshot | null> => {
     try {
-      const response = await fetch('/api/poll', { cache: 'no-store' });
-      const payload = (await response.json()) as PollStatus | { error: string };
-      if ('ready' in payload && payload.ready === false) {
+      const payload = await readPollSnapshot();
+      if ('ready' in payload) {
         setState({ kind: 'idle', reason: payload.reason });
         return null;
       }
-      if (!response.ok) throw new Error('error' in payload ? payload.error : 'Ballot could not load.');
-      const snapshot = payload as PollSnapshot;
-      setState({ kind: 'ready', data: snapshot });
-      return snapshot;
+      setState({ kind: 'ready', data: payload });
+      return payload;
     } catch (caught) {
       if (showError) {
         setState({ kind: 'error', message: caught instanceof Error ? caught.message : 'Ballot could not load.' });

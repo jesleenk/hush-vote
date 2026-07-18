@@ -11,6 +11,8 @@ function resolveNetworkId(value: string | undefined): (typeof SUPPORTED_NETWORKS
 }
 
 export const MIDNIGHT_NETWORK = resolveNetworkId(process.env.NEXT_PUBLIC_MIDNIGHT_NETWORK);
+export const MIDNIGHT_INDEXER_URL =
+  process.env.NEXT_PUBLIC_MIDNIGHT_INDEXER_URL?.trim() || 'https://indexer.preprod.midnight.network/api/v4/graphql';
 export const MIDNIGHT_PROOF_SERVER_URL =
   process.env.NEXT_PUBLIC_MIDNIGHT_PROOF_SERVER_URL?.trim() || 'http://localhost:6300';
 export const POLL_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS?.trim() || '';
