@@ -1,9 +1,12 @@
 'use client';
 
-import { findDeployedContract } from '@midnight-ntwrk/midnight-js-contracts';
 import { sampleSigningKey } from '@midnight-ntwrk/compact-runtime';
 import { CompiledContract } from '@midnight-ntwrk/compact-js';
-import { createUnprovenDeployTx, submitTxAsync } from '@midnight-ntwrk/midnight-js-contracts';
+import {
+  createUnprovenCallTx,
+  createUnprovenDeployTx,
+  submitTxAsync,
+} from '@midnight-ntwrk/midnight-js-contracts';
 import { Contract } from '@/contract/src/managed/poll/contract/index.js';
 import { POLL_CONTRACT_ADDRESS, POLL_PRIVATE_STATE_ID } from './poll-config';
 import type { PollChoice } from './poll-types';
@@ -54,12 +57,17 @@ const voteCircuitByChoice = {
 } as const;
 
 export async function submitBrowserVote(session: ConnectedSession, choice: PollChoice): Promise<string> {
-  const contract = await findDeployedContract(session.providers as any, {
+  // PollContract has no witnesses or private state. Build call directly so the
+  // browser wallet can prove, balance, and submit it on preprod.
+  const circuitId = voteCircuitByChoice[choice];
+  const callTxData = await (createUnprovenCallTx as any)(session.providers, {
     compiledContract,
     contractAddress: POLL_CONTRACT_ADDRESS,
-    privateStateId: POLL_PRIVATE_STATE_ID,
-    initialPrivateState: {},
+    circuitId,
+    args: [],
+  });
+  return submitTxAsync(session.providers as any, {
+    unprovenTx: callTxData.private.unprovenTx,
+    circuitId,
   } as any);
-  const finalized = await (contract.callTx as any)[voteCircuitByChoice[choice]]();
-  return finalized.public.txId;
 }

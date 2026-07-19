@@ -99,13 +99,24 @@ function createPatchedPublicDataProvider(queryUrl: string, subscriptionUrl: stri
     },
     async queryZSwapAndContractState(address: string, config?: unknown) {
       if (config) return base.queryZSwapAndContractState(address, config as never);
-      const action = await queryLatest(`query($address: HexEncoded!) { contractAction(address: $address) { state zswapState transaction { block { ledgerParameters } } } }`, address);
+      const [action, latestBlock] = await Promise.all([
+        queryLatest(`query($address: HexEncoded!) { contractAction(address: $address) { state zswapState transaction { block { ledgerParameters } } } }`, address),
+        fetch(queryUrl, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ query: '{ block { ledgerParameters } }' }),
+        }).then(async (response) => {
+          if (!response.ok) return null;
+          const payload = await response.json();
+          return payload.data?.block?.ledgerParameters as string | undefined;
+        }),
+      ]);
       if (!action?.zswapState) return null;
       return [
         ZswapChainState.deserialize(fromHex(action.zswapState)),
         ContractState.deserialize(fromHex(action.state)),
-        action.transaction?.block?.ledgerParameters
-          ? LedgerParameters.deserialize(fromHex(action.transaction.block.ledgerParameters))
+        latestBlock || action.transaction?.block?.ledgerParameters
+          ? LedgerParameters.deserialize(fromHex(latestBlock || action.transaction.block.ledgerParameters))
           : LedgerParameters.initialParameters(),
       ] as const;
     },

@@ -94,8 +94,9 @@ export default function PollCard() {
   };
 
   const sealVote = async () => {
-    if (!session || !selected) return;
+    if (!session || !selected || busy) return;
     const before = state.kind === 'ready' ? state.data : null;
+    setBusy(true);
     setError('');
     setTallyUpdated(false);
     setJourney('proving');
@@ -108,6 +109,8 @@ export default function PollCard() {
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Your vote was not sealed. Try again.');
       setJourney('choose');
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -279,8 +282,8 @@ export default function PollCard() {
         })}
       </fieldset>
 
-      <button type="button" className="primary-button" onClick={sealVote} disabled={!selected}>
-        Seal my vote
+      <button type="button" className="primary-button" onClick={sealVote} disabled={!selected || busy}>
+        {busy ? 'Sealing…' : 'Seal my vote'}
       </button>
       <p className="privacy-note">Your proof validates the vote without naming you.</p>
       {error ? <p className="error-message" role="alert">{error}</p> : null}
