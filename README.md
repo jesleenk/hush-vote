@@ -1,5 +1,10 @@
 # Hush Vote
 
+## Links
+
+- [Demo video](https://drive.google.com/file/d/1Ezn-QdSa4YXz7q1WUNRmLPyVzkETWeyl/view?usp=sharing)
+- [Live app](https://hush-vote.vercel.app/)
+
 Hush Vote is Midnight private voting app.
 
 Browser UI lives at repo root in Next.js. Compact contract lives in `contract/`. Vote flow uses connected Midnight wallet, indexer reads, and generated ZK assets copied into `public/zk/poll/`.
