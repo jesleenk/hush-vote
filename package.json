@@ -13,6 +13,7 @@
     "dev": "next dev ",
     "build": "next build",
     "start": "next start",
+    "test": "node --test tests/*.test.js",
     "typecheck": "tsc --noEmit",
     "contract:build": "npm run -w contract build"
   },

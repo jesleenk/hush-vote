@@ -1,9 +1,12 @@
 # Hush Vote
 
+[![CI](https://github.com/jesleenk/hush-vote/actions/workflows/ci.yml/badge.svg)](https://github.com/jesleenk/hush-vote/actions/workflows/ci.yml)
+
 ## Links
 
 - [Demo video](https://drive.google.com/file/d/1Ezn-QdSa4YXz7q1WUNRmLPyVzkETWeyl/view?usp=sharing)
 - [Live app](https://hush-vote.vercel.app/)
+- [Public GitHub repository](https://github.com/jesleenk/hush-vote)
 
 Hush Vote is Midnight private voting app.
 
@@ -16,6 +19,33 @@ Browser UI lives at repo root in Next.js. Compact contract lives in `contract/`.
 - Lets user seal vote with wallet-signed proof flow
 - Deploys new ballot from `/deploy`
 - Keeps vote identity hidden from public tally
+
+## Privacy Model
+
+### What an observer can learn
+
+- Ballot question and four answer options, because constructor text is disclosed.
+- Current public tally, total vote count, poll state, and transaction timing through the indexer.
+- That a vote transaction occurred and which vote circuit was called (`voteForA` through `voteForD`).
+
+### What an observer cannot learn
+
+- Voter identity from the Compact contract's public tally alone.
+- Wallet private keys or the private witness data used to create the proof.
+- Any personal information supplied outside this app and wallet flow.
+
+Privacy scope: Hush Vote hides voter identity, not vote choice. Since each option has a separate public circuit and tally, observers can see which option's counter changed. Users should not submit personal information as ballot text.
+
+## Submission Checklist
+
+- [x] Public GitHub repository with complete README
+- [x] Live demo link
+- [x] Test evidence: [3 tests passing](./docs/test-output.svg)
+- [x] CI/CD workflow and [passing CI runs](https://github.com/jesleenk/hush-vote/actions/workflows/ci.yml)
+- [x] Demo video (1 minute): [Google Drive](https://drive.google.com/file/d/1Ezn-QdSa4YXz7q1WUNRmLPyVzkETWeyl/view?usp=sharing)
+- [x] README privacy model: observer visibility explained above
+- [ ] Product proposal submitted and approved from idea list — approval record not present in repository
+- [x] Minimum 10 meaningful commits — repository history contains 15+ commits
 
 ## Repo Map
 
